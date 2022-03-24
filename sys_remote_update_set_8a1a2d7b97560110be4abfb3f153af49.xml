@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><unload unload_date="2022-03-24 15:25:06">
+<sys_remote_update_set action="INSERT_OR_UPDATE">
+<application display_value="Global">global</application>
+<application_name>Global</application_name>
+<application_scope>global</application_scope>
+<application_version/>
+<collisions/>
+<commit_date/>
+<deleted/>
+<description>A portal widget which can be used in a custom catalog variable to upload a csv and move the data in to a multi-row variable set with variables with the same names as the csv columns.
+
+Configure options in catalog variable default value with JSON as below. Remove comments before adding to default value.
+
+{
+
+button_text:"Import CSV Data", //the text to show on the button
+
+icon:"upload", //the glyphicon to show on the button
+
+level:"primary", // bootstrap class of the button. exclude "btn-"
+
+target:"", // [mandatory] the name of the multi-row variable set that you want the csv data imported to
+
+csv_template_link:"", // [optional] a link to template csv file the user can download to fill in and upload with their data. 
+
+csv_template_text:""//[optional] text that will form the link to the template file
+
+}</description>
+<inserted/>
+<name>Load CSV Data to MRVS</name>
+<origin_sys_id/>
+<parent display_value=""/>
+<release_date/>
+<remote_base_update_set display_value=""/>
+<remote_parent_id/>
+<remote_sys_id>c57b813f97d20110be4abfb3f153af34</remote_sys_id>
+<state>loaded</state>
+<summary/>
+<sys_class_name>sys_remote_update_set</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2022-03-24 15:25:05</sys_created_on>
+<sys_id>8a1a2d7b97560110be4abfb3f153af49</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2022-03-24 15:25:05</sys_updated_on>
+<update_set display_value=""/>
+<update_source display_value=""/>
+<updated/>
+</sys_remote_update_set>
+<sys_update_xml action="INSERT_OR_UPDATE">
+<action>INSERT_OR_UPDATE</action>
+<application display_value="Global">global</application>
+<category>customer</category>
+<comments/>
+<name>sp_widget_1d36074397560110be4abfb3f153af0a</name>
+<payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[api.controller=function($scope,spUtil,$rootScope) {
+	/* widget controller */
+	var c = this;
+	
+	c.data.filename = "";
+	
+	var fileSelector = document.createElement('input');
+	fileSelector.setAttribute('id', c.data.button.id+"_input");
+	fileSelector.setAttribute('type', 'file');
+	fileSelector.setAttribute('accept', '.csv');
+	fileSelector.addEventListener('change', function(){
+		$scope.logFileAdded(fileSelector);
+	});
+
+	$scope.openAttachmentSelector = function(event){
+		fileSelector.click();
+	};
+	
+	$scope.logFileAdded = function (element) {
+		var file = element.files[0];
+		if (file) {
+			c.data.filename = file.name;
+			var aReader = new FileReader();
+			aReader.readAsText(file, "UTF-8");
+			aReader.onload = function (evt) {
+				var result = aReader.result;
+				var rows = result.split("\r\n");
+				var rowProps = rows[0].split(",");
+				var fileContents = []; 
+				var txt = "";
+				for(var j = 1 ; j &lt; rows.length ; j++){
+					var ln ={};
+					txt = rows[j];
+					if(txt != ""){
+						for(var i = 0 ; i &lt; rowProps.length ; i++){
+							var prop = rowProps[i];
+							ln[prop] = txt.split(",")[i];
+						}
+						fileContents.push(ln);
+					}
+				}
+				c.data.fileContents = JSON.stringify(fileContents);
+				$scope.page.g_form.setValue(c.data.targetMRVS,c.data.fileContents);
+				aReader.onerror = function (evt) {
+					c.data.filename = "Error";
+				};
+			};
+		}
+	};
+
+};
+]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css/&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id/&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {
+  
+}]]&gt;&lt;/link&gt;&lt;name&gt;Load CSV Data to MRVS&lt;/name&gt;&lt;option_schema&gt;[{"hint":"The text to show in the button","name":"button_text","section":"other","default_value":"Import CSV","label":"Button Text","type":"string"},{"hint":"The icon to show on the button","name":"icon","section":"other","default_value":"upload","label":"Icon","type":"glyphicon"},{"hint":"The bootstrap class to use for the button","name":"level","section":"other","default_value":"primary","label":"Level","type":"choice","choices":[{"label":"default","value":"default"},{"label":"primary","value":"primary"},{"label":"alert","value":"alert"},{"label":"warning","value":"warning"},{"label":"info","value":"info"},{"label":"success","value":"success"}]},{"hint":"The Multi-row Variable Set to target with the import csv data","name":"target","section":"other","default_value":"","label":"Target","type":"string"},{"hint":"Allow the user to add multiple files at once","name":"multiple_files","section":"other","default_value":"false","label":"Multiple Files","type":"boolean"},{"hint":"URL of a csv template the user can download to populate and import","name":"csv_template_link","section":"other","default_value":"","label":"CSV Template Link","type":"string"},{"hint":"Unique ID attribute for the Button html element","name":"id","section":"other","default_value":"custom_attachment_button","label":"ID","type":"string"},{"hint":"Text to show as a link to download your specified csv template","name":"csv_template_text","section":"other","default_value":"Download a template CSV","label":"CSV Template text","type":"string"}]&lt;/option_schema&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	
+	if(options.csv_template_link){
+		data.template = {};
+		data.template.href = options.csv_template_link;
+		data.template.text = options.csv_template_text;
+	}
+	
+	data.button = {};
+	data.button.text = options.button_text;
+	data.button.icon = options.icon;
+	data.button.id = options.id;
+	data.button.level = options.level;
+	
+	data.targetMRVS = options.target || null
+	
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2022-03-22 14:12:21&lt;/sys_created_on&gt;&lt;sys_id&gt;1d36074397560110be4abfb3f153af0a&lt;/sys_id&gt;&lt;sys_mod_count&gt;120&lt;/sys_mod_count&gt;&lt;sys_name&gt;Load CSV Data to MRVS&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Global"&gt;global&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_1d36074397560110be4abfb3f153af0a&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2022-03-24 15:21:36&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div ng-if="data.targetMRVS"&gt;
+  &lt;button ng-click="openAttachmentSelector($event)" type="button" id="{{data.button.id}}" class="btn btn-{{data.button.level}}"&gt;
+    &lt;span class="glyphicon glyphicon-{{data.button.icon}}" char="upload"&gt;&lt;/span&gt;
+    &lt;small class="ng-binding"&gt;{{data.button.text}}&lt;/small&gt;
+  &lt;/button&gt;
+  &lt;small&gt;{{data.filename}}&lt;/small&gt;
+  &lt;div ng-if="data.template" class="pull-right"&gt;
+    &lt;a href="{{data.template.href}}"&gt;{{data.template.text}}&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div ng-if="!data.targetMRVS" class="alert alert-danger"&gt;
+  &lt;i class="fa fa-exclamation-circle" /&gt; Error: [Load CSV Data to MRVS Widget] You must specify a target mulit-row variable set in the widget options.
+&lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+<payload_hash>-1609305562</payload_hash>
+<remote_update_set display_value="Load CSV Data to MRVS">8a1a2d7b97560110be4abfb3f153af49</remote_update_set>
+<replace_on_upgrade>false</replace_on_upgrade>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2022-03-24 15:25:05</sys_created_on>
+<sys_id>c61aa5bb97560110be4abfb3f153afaf</sys_id>
+<sys_mod_count>0</sys_mod_count>
+<sys_recorded_at>17fbc84d5cc0000001</sys_recorded_at>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2022-03-24 15:25:05</sys_updated_on>
+<table/>
+<target_name>Load CSV Data to MRVS</target_name>
+<type>Widget</type>
+<update_domain>global</update_domain>
+<update_guid>ba49297b33560110854326ba8bf536d3</update_guid>
+<update_guid_history>ba49297b33560110854326ba8bf536d3:-1609305562,1188e13be4560110930aebb983579a49:-1601466981,a957e1f7065601107094082396c53a8c:-1295317267,5c462133ca5601109463e25afd292d44:1343137021,247a4dbbb6d20110e1da3d88349c878e:1500292748,7d5a417be6d20110ef0d59fcc0760e5b:-990659574,e33a89bbbdd20110c5202f9cfb4b1324:-1257657693,302a45bbe5d20110cec477d1c22d059c:-38020949,350a09bbc4d20110d3df56e2c8645009:-1080348612,37d9857746d20110a4ead58fb3d58700:-1139107177,0989097724d201101217a034ff83b093:-2045286671,181945f7afd20110934f75f364c8f421:-1761515765,6aa8cd3bb7d201108b423f485af7eb8a:-1411781878,119885779cd201106dfe9d9b368bb91b:-1191658969,3c3805f792d20110ce69a88adff99aee:-1028741300,6597097755d20110e791ef6fb1ad9f49:-1260762170,fc45857735d20110161dbcf331672e37:-647232439,af2509778bd20110b9429ff10c613340:690645573,63f40df346d20110188f4406be852e6d:1585065235,aaf40d733fd20110b769845b8bf55dda:1897089261,ac2445f3e9d20110fabd7dd5d56affc9:630144114,00e305b387d2011093158df52d8c398c:691694520,e8a345f3b0d20110b25a944a185c1ac5:-13390030,ae7305b3eed2011064baeff2379b8787:515992963,483345f3acd201107bee6eeaf98f14c1:-55427993,3be209b3b5d20110572e5fc47f6791c3:1726006909,4cb209b350d201101c34cc0d9af98abe:1871908979,d25205b3d1d20110b514a066adc7ae22:481178206,ce02cd3337d2011049cf257933119ff2:-1891580357,dfb1897389d20110125da0e1f2e5c0d8:1714474110,4391c173a9d20110a86603225b15b7c6:-1560426712,0d51c1737cd20110a8f4f7f029737997:-2026273912,6421c173f0d20110d82afcb05ae7045c:615617621,28e0c5336dd201100864cf44a623ef6c:-2032628344,54a0c133afd20110b49d7925fe6e0681:536775284,4340c13357d201105243af6f5ba73f41:-1617381443,1040c133c8d20110e0fe395a8c329196:-1549783097,7320c133c5d20110ffc4a2b1238fe20d:1720394024,cdeffc7fcf9201109f3eb0b40fa9d9a0:791209831,64fdb47f8c9201109511e02bc4433c20:-677047710,b74d7c3fb69201109e78e721695dffc0:-404357049,440df0fb4392011064b469c3d50a12e1:-894209424,fcec34fbfa920110ad3dc1454bd04567:-323115696,44ac34fb799201107da8e63c322ee30d:383602503,b96b74fbe2920110e337d47d6b8522e0:-732544633,874bf0fb9a920110177cf805c14d0ed6:-237817721,a92bb07ba5920110a9460249fa51ae95:-300854755,395a70bba8920110b35e03e6cdbf9791:2128804999,ca0a3c7b1e920110cda0c4cb18c55ac3:-209027200,1dc9307b449201107c4d1c601d8aaf28:1532833088,d269783b76920110de66ad1ec491f974:226162876,4e5938f7909201102da9e183e6c87350:-2145306548,c139f83b42920110b0043389ed4d7499:707506140,52e838f763920110b65c3a49bcac975a:-1412216861,4ac8703b2e920110dd01e5db9c27ea0f:-2101047478,c26838f7bb920110f81e1b0b21b50d6e:-935135197,90d77cb7b4920110a2ea3322ac6b31d9:-615840135,e237fcb79a920110a23c351976071e88:-254074572,3e17bcb332920110b5f6db0234ef8a5f:-32000305,f955bcb31c920110dc07a0493d1eb936:1836423587,c60570374b9201107f6006badf7041a0:1821089163,ff44bcf3e292011097ccc328aabd5801:997971344,b4147cf391920110788c6a83c69d1c59:-61421651,c6333cb3f9920110e496605a8c15c2f5:-371773514,da23b833ab920110cd05347f621876fd:1846702062,1313b4b3d89201108f10d1e50452641c:-942653210,26a23c33bd9201101778eb9ef4894551:2082976823,deb0bcffda5201103a792cd6949c84e1:855591403,c2a0b033a5920110a188d0e5d6d73a9a:404579549,dd607cbf3b520110da250acf4a23274c:-908078183,826fe8bf74520110b10902bd1e4255d4:769188841,3f4fa4bf9d520110f9174ff447fcc0ae:304934262,05fe20bff95201100e090bcc59470bf2:-677875873,f68eec3f93520110781165cd2005fcf2:-1335539121,21bdecfb5a520110a4c29077cbee2a58:954176032,3b9d6cfbd5520110ff567a68287c1167:1044488196,ef7d6c3f405201103e4bb194bc696410:1466627683,83bc6cfb87520110fe8336e5b0013d19:1086616759,469c2cfb2652011072a2629ef470c3a5:2116426722,ea9a2cb387520110bb7cdb0a1e1f9919:1884276770,09f360b3da520110bc02590a485f0726:2077521005,7eb328b39352011069fd6ad88e889707:1548160282,49a3a4b363520110c4ca66ed7d5e499d:-462790566,4b33ec732652011028bba77fdaac1444:-1792505499,bc23ec73fc520110640bac300a9a052e:-2067475849,aab2a87f97120110b320acbdd998f4a7:1402371784,3350647ff81201100f31e6bd9e20d9f3:1516879530,2dce987f2c1201101e15daf6c35e5da1:-1681682026,bc7ed0fbd712011088ab9c73eecc6c39:-17622249,23cdd0fb25120110a4544fdab46d1f35:574386635,12ad907ba11201108907ae98ad909dda:190004950,326a10f7d6120110bd777cebe53b4d5e:1441610138,97481cb73112011026de34c457ec29b5:531812013,650818b77a1201100a621a246480fbd4:582489486,67c71477b01201108f8d98033e9c6595:-356970539,a8c7d4b7eb120110c0902ac271a62688:1299170008,bb1714778b120110526f11162082d28c:1841016474,5656d077141201103948e1165cce1f49:-34220819,f4a4b02f2d5601100bafd7a97ea27b7f:-695495958,eb54b02ff4560110f7e47a3979cb297a:-1764803293,62efa8e71f56011006dadc3b0c262a54:-1754348902,e93f28a70a5601106817975dab09c8d9:120504408,5ffee0e3ed560110b131e051d937db91:1955530506,df6d60671256011056e95a11471272dc:1976215727,0fbc2427e3560110fdb92d67ffdcaebd:2037747591,69aca027bd560110c57f7a0fbe84f5e7:-1082917272,e64be8a3605601108116a2a44f6ab4d6:1065229586,a30b642fd016011051dd0d869d7cb088:-1687846227,b7da206fba160110ccb78179a8e008e2:243844642,7e15682f8416011065ca1d556c53c5e5:-1507560211,1ff89b073d960110d0e440501693b3dc:1408149566,a82a0f075d560110d772db2bf82cfd1a:-14416582,51f98f07ff560110a0ba1d2ea9734093:987359935,aee9cb07ec560110f308fe742438e645:1873487010,c1c987079e560110a9e6085138482e55:-2068258476,ba99c7835f560110f3d8f3c98ca31e0b:698495310,1c498707d05601105426ae9877f4a703:-1987120256,21f80f83e5560110694f8207a4932adf:1097309401,ebd84f434d5601106818180e5aa7de37:1046193636,ce67cf435f5601102d0b71a52714dd0f:-380789776,894683439c560110adbb413828aaf1c4:55870030</update_guid_history>
+<update_set display_value=""/>
+<view/>
+</sys_update_xml>
+</unload>
